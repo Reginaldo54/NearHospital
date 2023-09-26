@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,10 +41,20 @@
   <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
     ({key: "AIzaSyDlc4cODZ53tzzZjFh-w9pqJvmWpkjPgdM", v: "beta"});</script>
     
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
         
             
         let lat, lon;
+
+        // Constante para definir qual valor vai está dentro do array bidimencional
+        const lati = 0;
+        const long = 1;
+
+        let coordenadas = [[],[]];
+        let distancias = [];
+        let coordenadaMaisProxima = [[],[]];
 
         function getLocation()
         {
@@ -55,20 +65,56 @@
               lat = document.getElementById("lat").innerText = pos.coords.latitude;
               lon = document.getElementById("lon").innerText = pos.coords.longitude;	
               initMap();
-            });
+
+               
+            // Fazer o calculo de proximidade e selecionar a latitude e longitude mais próxima do usuário
+            
+            
+            // Obtendo as distâncias
+            for(let i = 0; i < coordenadas[lati].length; i++)
+            {
+              distancias[i] = calcCrow(lat, lon, coordenadas[lati][i], coordenadas[long][i]);
+            }
+
+            // Pegando a menor distância
+            let menorDistancia = Math.min(...distancias);
+
+            // Pegando as coordenadas referênte a distância...
+            for(let i = 0; i < coordenadas[lati].length; i++)
+            {
+              let distancia = calcCrow(lat, lon, coordenadas[lati][i], coordenadas[long][i]);
+
+              if( distancia == menorDistancia )
+              {
+                 coordenadaMaisProxima[lati][0] = coordenadas[lati][i];
+                 coordenadaMaisProxima[long][0] = coordenadas[long][i];
+              }
+            }
+
+
+              // Pritando
+              console.log("Menor Distância: " + menorDistancia);
+              console.log("Coordenadas mais próximas:\n Lat: " + coordenadaMaisProxima[lati][0] + "\n Long: " + coordenadaMaisProxima[long][0]);
+
+
+
+          });
         }
 
 
         let map;
-
-        async function initMap() {
+        let directionsService;
+        let directionsRenderer;
+        
+        async function initMap() 
+        {
     
            // Minha localização
             const position = { lat: lat, lng: lon };
             
             // Request needed libraries.
             //@ts-ignore
-            const { Map } = await google.maps.importLibrary("maps");
+            const { Map} = await google.maps.importLibrary("maps");
             const { AdvancedMarkerView } = await google.maps.importLibrary("marker");
 
             // The map, centered at Uluru
@@ -84,11 +130,85 @@
               position: position,
               title: "Minha Localização",
             });
+
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+
+            const destination = new google.maps.LatLng(coordenadaMaisProxima[lati][0], coordenadaMaisProxima[long][0]);
+
+            const request = {
+                origin: position,
+                destination: destination,
+                travelMode: 'DRIVING'
+            };
+            
+            const directionsService = new google.maps.DirectionsService();
+            directionsService.route(request, function (result, status) {
+                if (status == 'OK') {
+                    directionsRenderer.setDirections(result);
+                }
+            });
           
         }
 
 
-        getLocation();  </script>
-    </script>
+        
+
+        // Jogar essas variáveis de lat e lon dentro de um array.
+        
+    
+
+         fetch("http://dados.recife.pe.gov.br/api/3/action/datastore_search?resource_id=a2dab4d4-3a7b-4cce-b3a7-dd7f5ef22226&limit=5")
+         .then(resposta => resposta.json()) // Pega o formato json e transforma em objeto
+         .then(
+          function(coordenada)
+          {
+            let tamArray = coordenada.result.records.length;
+            for(let i = 0; i < tamArray; i++)
+            {
+              // Guardando as coordenadas latitude e longitude no array multidimensional
+              coordenadas[lati][i] = coordenada.result.records[i].latitude;
+              coordenadas[long][i] = coordenada.result.records[i].longitude;
+            }
+          }  
+          )
+          
+          
+          // Pegando a coordenada
+        
+          console.log(coordenadas);
+
+      
+        // Código copiado do link: https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
+
+        //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
+        function calcCrow(lat1, lon1, lat2, lon2) 
+        {
+          console.log(lat1, lon1, lat2, lon2)
+          var R = 6371; // km
+          var dLat = toRad(lat2-lat1);
+          var dLon = toRad(lon2-lon1);
+          var lat1 = toRad(lat1);
+          var lat2 = toRad(lat2);
+
+          var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+          var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+          var d = R * c;
+          return d;
+        }
+
+        // Converts numeric degrees to radians
+        function toRad(Value) 
+        {
+            return Value * Math.PI / 180;
+        }
+
+        // Usar o google maps para fazer uma trilha do local do usuário ao hospital
+        
+        getLocation();
+        
+        </script>
+    
 </body>
 </html>
