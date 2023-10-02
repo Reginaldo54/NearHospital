@@ -148,41 +148,32 @@
             });
           
         }
-
-
-        
-
-        // Jogar essas variáveis de lat e lon dentro de um array.
-        
     
+          // Api de dados com localizações.
 
-         fetch("http://dados.recife.pe.gov.br/api/3/action/datastore_search?resource_id=a2dab4d4-3a7b-4cce-b3a7-dd7f5ef22226&limit=5")
+          fetch("hospitaisRecife.json")
          .then(resposta => resposta.json()) // Pega o formato json e transforma em objeto
          .then(
-          function(coordenada)
-          {
-            let tamArray = coordenada.result.records.length;
-            for(let i = 0; i < tamArray; i++)
+            function(coordenada)
             {
-              // Guardando as coordenadas latitude e longitude no array multidimensional
-              coordenadas[lati][i] = coordenada.result.records[i].latitude;
-              coordenadas[long][i] = coordenada.result.records[i].longitude;
-            }
-          }  
+            
+              console.log(coordenada);
+              const lat = 16, lon = 17, tamArray = coordenada.records.length;
+              
+              for(let i = 0; i < tamArray; i++)
+              {
+                // Guardando as coordenadas latitude e longitude no array multidimensional
+                coordenadas[lati][i] = coordenada.records[i][lat];
+                coordenadas[long][i] = coordenada.records[i][lon];
+              }
+            }  
           )
-          
-          
-          // Pegando a coordenada
-        
-          console.log(coordenadas);
 
-      
         // Código copiado do link: https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
 
         //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
         function calcCrow(lat1, lon1, lat2, lon2) 
         {
-          console.log(lat1, lon1, lat2, lon2)
           var R = 6371; // km
           var dLat = toRad(lat2-lat1);
           var dLon = toRad(lon2-lon1);
