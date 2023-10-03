@@ -1,4 +1,4 @@
-var cacheName = 'atvPwa+-v1.0';
+var cacheName = 'NearHospital+-v1.0';
 
 self.addEventListener('install', event => {
 
@@ -10,31 +10,25 @@ self.addEventListener('install', event => {
         const resources = [
           'index.html',
           'map.html',
+          'listaHospitais.html',
           
           'assets/css/fontawesome-all.min.css',
-          
           'assets/css/main.css',
-  
           'assets/css/images/arrow.svg',
-  
           'assets/css/images/overlay.png',
+          'hamburger.css',
   
+          'mapa/leaflet-routing-machine.js',
+          'mapa/leaflet.js',
           'assets/js/breakpoints.min.js',
-  
           'assets/js/browser.min.js',
-  
           'assets/js/jquery.min.js',
-          
           'assets/js/jquery.scrollex.min.js',
-          
           'assets/js/jquery.scrolly.min.js',
-  
           'assets/js/main.js',
-          
           'assets/js/util.js',
   
           'assets/sass/main.scss',
-  
           'assets/sass/libs/_breakpoints.scss',
           'assets/sass/libs/_functions.scss',
           'assets/sass/libs/_html-grid.scss',
@@ -70,6 +64,12 @@ self.addEventListener('install', event => {
           'images/pic03.jpg',
           'images/pic04.jpg',
           'images/pic05.jpg',
+
+          'images/barras.jpeg',
+          'images/botao-de-seta-para-a-esquerda-do-teclado.jpeg',
+          'images/mapa.jpeg',
+
+          'hospitaisRecife.json',
   
         ];
 

@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa</title>
-
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="listaHospitais.css">
     <link rel="stylesheet" href="hamburger.css">
-    
-		<meta name="description" content="NearHospital é um app que lhe dá algumas localizações de hospitais mais próximos de você!">	  
+
+		<meta name="description" content="NearHospital é um app que te dar algumas localizações de hospitais mais próximos de você!">	  
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="msapplication-TileImage" content="icons/144.png">
 		<meta name="msapplication-TileColor" content="#FFF">
@@ -39,28 +37,24 @@
     </style>
 </head>
 <body>
-    <main id="main">
+  <main id="main">
 
-        <header id="header">
-        <nav id="nav">
-        <button id="btn"></button>
-      
-        <span id="hamburger"></span>
-      
-        <!-- adicionar aqui no href para onde as opçoes vao levar -->
-      
-        <ul id="cardapio">  
-          <li><a href="map.html" class="menu">Mapa Principal</a></li>
-          <li><a href="listaHospitais.html" class="menu">Lista de Hospitais</a></li>
-        </ul>
-      
-        </nav>
-        </header>
-        </main>
-      
-      
-        
-        <div>
+    <header id="header">
+    <nav id="nav">
+    <button id="btn"></button>
+  
+    <span id="hamburger"></span>
+  
+    <ul id="cardapio">  
+      <li><a href="map.html" class="menu">Mapa Principal</a></li>
+      <li><a href="listaHospitais.html" class="menu">Lista de Hospitais</a></li>
+    </ul>
+  
+  </nav>
+  </header>
+  </main>
+
+  <div>
         <a href="index.html">
           <img id="img" height="19" width="19" src="images/botao-de-seta-para-a-esquerda-do-teclado.jpeg" alt=" Seta para esquerda">
         </a>  
@@ -69,14 +63,14 @@
           
           <img id="images" width="19" height="19" src="images/barras.jpeg" alt="">
         <br>
-        </div>
-       
-    <button id="traca" onclick="TracaRota()" style=" display: flexbox; font-size: 1.5em; position: fixed; z-index: 10; left: 50vw; top: 90vh; transform: translate(-50%, -50%); border-radius: 10px; background-color: rgb(2, 25, 121); color: whitesmoke;">Traçar a rota</button>
-    <div id="map" style="z-index: 0;"></div>
+  </div>
+  
+  <section id="listaHosp">
     
+  </section>
+  
+  
     <!--Mapa usado-->
-    <script src="mapa/leaflet.js"></script>
-    <script src="mapa/leaflet-routing-machine.js"></script>
     <script>
         // informações
         const tipoUnidade = 1, nomeOficial = 2, tipoServico = 8, endereco = 9,
@@ -89,20 +83,12 @@
         
         let points = [];
 
-        var map;
 
         // Iniciando mapa
-        IniciandoMapa();
+        Iniciando();
 
-        function IniciandoMapa()
+        function Iniciando()
         {
-            map = L.map('map') // Define as coordenadas de Recife
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            {
-                maxZoom: 19,
-            }).addTo(map);
-
             if ('geolocation' in navigator) 
             {
                 // Adicione um marcador para a localização do usuário
@@ -110,13 +96,6 @@
                 {
                     lat = position.coords.latitude;
                     lon = position.coords.longitude;
-
-                    // Iniciando mapa na localização do usuário
-                    map.setView([lat, lon], 15);
-
-                    L.marker([lat, lon]).addTo(map)
-                        .bindPopup('Sua Localização Atual')
-                        .openPopup();
 
                     // Pegando as distancias entre o usuário e os hospitais
                     let distancias = ObterDistancias()
@@ -126,10 +105,9 @@
                 
                 
                     ObterHospitais(menoresDistancias);
-                    console.log(hospitaisMaisProximos)
 
                     PreenchePontos();
-                
+                    CriandoHtml();
                 }
                 
                 );
@@ -139,11 +117,8 @@
                 alert('Seu navegador não suporta geolocalização');
             }
         }
+          
         
-
-        // Obtendo os 10 hospitais mais próximos
-        
-
 
         //#region funções da função obteHospitaisMaisProximos
         function ObterDistancias()
@@ -217,27 +192,33 @@
                 
             }
             
-            points.forEach(function (point) 
-            {
-                L.marker(point.latLng).addTo(map).bindPopup(point.nomeOficial);
-            });
-
-             
         }
-        
+
+        function CriandoHtml()
+        {
+          let lista = document.querySelector("#listaHosp");
+
+          for (let i = 0; i < hospitaisMaisProximos.length; i++) 
+          {
+            let htmlLista = "<ul>" +
+                          "<li> <strong>Tipo de Unidade:</strong> " + hospitaisMaisProximos[i][tipoUnidade] + "</li>" +
+                          "<li><strong>Nome Oficial:</strong> " + hospitaisMaisProximos[i][nomeOficial] + "</li>" +
+                          "<li><strong>Tipo de Serviço:</strong> " + hospitaisMaisProximos[i][tipoServico] + "</li>" +
+                          "<li><strong>Endereço:</strong> <a target='_blank' href='https://maps.google.com/?q=" + hospitaisMaisProximos[i][endereco] + "'>" + hospitaisMaisProximos[i][endereco] + "</a></li>" + 
+                          "<li><strong>Especialidade:</strong> " + hospitaisMaisProximos[i][especialidade] + "</li>" +
+                          "<li><strong>Telefone:</strong> <a href='tel:" + hospitaisMaisProximos[i][telefone] + "''>" + hospitaisMaisProximos[i][telefone] + "</a></li>"+
+                          "<li><strong>Horário:</strong> " + hospitaisMaisProximos[i][horario] + "</li>" +
+                          "</ul>";
+
+            lista.innerHTML += htmlLista;
+          }
+        }
+
         // Pegando informações do json
         fetch("hospitaisRecife.json")
          .then(resposta => resposta.json()) // Pega o formato json e transforma em objeto
           .then(function(coordenada){ obj = coordenada.records;})
            
-       
-        // Atualize o tamanho do mapa quando a janela for redimensionada
-        window.addEventListener('resize', function () {
-            map.invalidateSize();
-        });
-
-
-
         // Calculo de distância
 
             // Código copiado do link: https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
@@ -245,17 +226,17 @@
             //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
             function calcCrow(lat1, lon1, lat2, lon2) 
             {
-            var R = 6371; // km
-            var dLat = toRad(lat2-lat1);
-            var dLon = toRad(lon2-lon1);
-            var lat1 = toRad(lat1);
-            var lat2 = toRad(lat2);
+              var R = 6371; // km
+              var dLat = toRad(lat2-lat1);
+              var dLon = toRad(lon2-lon1);
+              var lat1 = toRad(lat1);
+              var lat2 = toRad(lat2);
 
-            var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
-            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-            var d = R * c;
-            return d;
+              var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+              var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+              var d = R * c;
+              return d;
             }
 
         // Converts numeric degrees to radians
@@ -263,45 +244,31 @@
         {
             return Value * Math.PI / 180;
         }
-
-        function TracaRota()
-        {
-            // fazendo botão desaparecer
-            let button = document.getElementById("traca");
-            button.setAttribute("style", "display: none;");
-
-            // Ativando rota.
-            L.Routing.control({
-             waypoints: [
-            L.latLng([lat, lon]), // Localização do usuário
-            L.latLng(points[0].latLng) // Destino mais próximo
-                ],
-                routeWhileDragging: true
-            }).addTo(map);
-
-        }
        
+    
+
     </script>
     <script>
 
-        const butao = document.getElementById('btn');
+      const butao = document.getElementById('btn');
 
-        function toggleMenu(event) {
-            if (event.type === 'touchstart') event.preventDefault(); 
-            const nav = document.getElementById('nav');
-            nav.classList.toggle('active');
+      function toggleMenu(event) {
+          if (event.type === 'touchstart') event.preventDefault(); 
+          const nav = document.getElementById('nav');
+          nav.classList.toggle('active');
 
-        }
+      }
 
 
-        butao.addEventListener('click', toggleMenu);
-        butao.addEventListener('touchstart', toggleMenu);
+      butao.addEventListener('click', toggleMenu);
+      butao.addEventListener('touchstart', toggleMenu);
 
 
     </script>
     <script>
         let newWorker;
-        if ('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator)
+        {
           navigator.serviceWorker.register('service-worker.js').then(reg => {
             reg.addEventListener('updatefound', () => {
               newWorker = reg.installing;
@@ -315,6 +282,5 @@
           });
         }
     </script>
-    
 </body>
 </html>

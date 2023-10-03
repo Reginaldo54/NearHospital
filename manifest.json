@@ -1,7 +1,7 @@
 {
-  "name": "atv PWA",
-  "short_name": "atv PWA",
-  "description": "Atividade para a cadeira de mobile",
+  "name": "NearHospiral",
+  "short_name": "NH",
+  "description": "Encontre o hospital mais próximo de você.",
   "icons": [
     {
       "src": "icons/128.png",
