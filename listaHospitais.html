@@ -9,7 +9,7 @@
 
 		<meta name="description" content="NearHospital é um app que te dar algumas localizações de hospitais mais próximos de você!">	  
 		<meta name="mobile-web-app-capable" content="yes">
-		<meta name="msapplication-TileImage" content="icons/144.png">
+		<meta name="msapplication-TileImage" content="icons/152.png">
 		<meta name="msapplication-TileColor" content="#FFF">
 		<meta name="theme-color" content="#000" />
 		<link rel="shortcut icon" sizes="192x192" href="icons/192.png">
@@ -18,14 +18,14 @@
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 		<meta name="apple-mobile-web-app-title" content="PWA Teste">
-		<link rel="apple-touch-icon" href="icons/144.png">
+		<link rel="apple-touch-icon" href="icons/152.png">
 		<link rel="apple-touch-icon" href="icons/appstore.png">
 		<link rel="apple-touch-icon" sizes="152x152" href="icons/152.png">
 		<link rel="apple-touch-icon" sizes="180x180" href="icons/180.png">
 		<link rel="apple-touch-icon" sizes="167x167" href="icons/167.png">
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		
-		<link rel="icon" type="image/png" href="icons/144.png">
+		<link rel="icon" type="image/png" href="icons/152.png">
 
     <style>
         #map
@@ -310,7 +310,7 @@
         let newWorker;
         if ('serviceWorker' in navigator)
         {
-          navigator.serviceWorker.register('service-worker.js').then(reg => {
+          navigator.serviceWorker.register('./service-worker.js').then(reg => {
             reg.addEventListener('updatefound', () => {
               newWorker = reg.installing;
             });
