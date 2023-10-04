@@ -49,7 +49,6 @@ self.addEventListener('install', event => {
           './assets/webfonts/fa-regular-400.woff2',
   
           './icons/128.png',
-          './icons/144.png',
           './icons/152.png',
           './icons/167.png',
           './icons/180.png',
